@@ -29,10 +29,6 @@ async function setupSidePanelTrap(context, outputFile = 'prospeo_leads.jsonl') {
                 fs.appendFileSync(outputFile, line);
                 
                 console.log(`💰 Capture successful. Lead details saved.`);
-                
-                // Generate CSV immediately after capture
-                console.log(`📊 Generating CSV...`);
-                await convertToCSV(outputFile, 'prospeo_leads.csv');
             } catch (e) {
                 console.log(`⚠️ Skip: Response was not JSON or timed out.`);
             }

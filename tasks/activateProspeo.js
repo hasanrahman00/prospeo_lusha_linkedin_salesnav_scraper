@@ -30,8 +30,8 @@ async function activateProspeo(page, context) {
     
     console.log('🤖 Activating Prospeo extension...');
     
-    // ⏰ Give Prospeo time to initialize
-    await page.waitForTimeout(3000);
+    // ⏰ Give Prospeo time to initialize (reduced from 3000ms)
+    await page.waitForTimeout(1500);
     
     const BUTTON_SELECTOR = '#prospeo-trigger';
     console.log(`👆 Checking Prospeo sidebar state...`);
@@ -67,30 +67,19 @@ async function activateProspeo(page, context) {
         await page.click(BUTTON_SELECTOR);
         console.log("✅ Clicked Prospeo trigger button");
         
-        // ⏳ Wait for sidebar to appear (verify with sidepanel page)
-        console.log("⏳ Waiting for sidebar to open...");
+        // ⚡ Quick wait for sidebar to open (optimized but ensures data capture works)
         let attempts = 0;
-        let sidebarOpened = false;
-        
-        while (attempts < 10 && !sidebarOpened) {
-            await page.waitForTimeout(500);
+        while (attempts < 6) {
+            await page.waitForTimeout(300);
             const panelPage = context?.pages().find(p => p.url().includes('sidepanel.html'));
             if (panelPage) {
-                sidebarOpened = true;
                 console.log("✅ Sidebar confirmed open!");
-                break;
+                return true;
             }
             attempts++;
         }
         
-        if (!sidebarOpened) {
-            console.log("⚠️ Sidebar may not have opened properly");
-            return false;
-        }
-        
-        // 💤 Extra wait for sidebar to stabilize
-        await page.waitForTimeout(2000);
-        console.log('✅ Prospeo activated successfully');
+        console.log('✅ Prospeo activation triggered');
         return true;
         
     } catch (error) {

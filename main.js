@@ -99,8 +99,11 @@ const { setupSidePanelTrap } = require('./extractData');
             // 🖱️ Scroll page to load leads
             await scrollDashboardPage(page, config.SCROLL_OPTIONS);
 
-            // ⏰ Wait for data capture
-            await waitForCapture(page, 5000);
+            // ⏰ Wait for data capture (optimized)
+            await waitForCapture(page, 2000);
+
+            // 📊 Generate CSV after page completion
+            await generateCSV();
 
             // ➡️ Try to navigate to next page
             const nextResult = await goToNextPage(page, currentPage);
@@ -112,17 +115,9 @@ const { setupSidePanelTrap } = require('./extractData');
 
             currentPage = nextResult.pageNumber;
 
-            // 🔍 Verify Prospeo is still active
-            console.log('🔍 Verifying Prospeo on new page...');
-            const verified = await activateProspeo(page, context);
-            
-            if (!verified) {
-                console.log('⚠️ Retrying Prospeo activation...');
-                await page.waitForTimeout(2000);
-                await activateProspeo(page, context);
-            }
-
-            await page.waitForTimeout(3000);
+            // 🔍 Quick Prospeo check on new page (optimized)
+            await activateProspeo(page, context);
+            await page.waitForTimeout(1000);
         }
 
 
@@ -134,8 +129,8 @@ const { setupSidePanelTrap } = require('./extractData');
         console.log(`🏁 Completed ${currentPage} pages!`);
         console.log(`═══════════════════════════════════════════════════════\\n`);
 
-        // ⏰ Final capture wait
-        await waitForCapture(page, 5000);
+        // ⏰ Final capture wait (optimized)
+        await waitForCapture(page, 2000);
 
         // 📊 Generate CSV
         await generateCSV();

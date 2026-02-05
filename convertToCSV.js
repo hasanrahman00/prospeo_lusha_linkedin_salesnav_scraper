@@ -1,7 +1,7 @@
 const fs = require('fs');
 const { parse } = require('json2csv');
 
-async function convertToCSV(inputFile = 'prospeo_leads.jsonl', outputFile = 'prospeo_leads.csv') {
+async function convertToCSV(inputFile = 'leads.jsonl', outputFile = 'leads.csv') {
     console.log('\n📊 Converting JSONL to CSV...');
     
     try {
