@@ -22,16 +22,22 @@ async function setupSidePanelTrap(context, outputFile = 'prospeo_leads.jsonl') {
         if (url.includes('people-view') && url.includes('prospeo')) {
             console.log(`🔥 LEAD DATA DETECTED!`);
             
-            try {
-                // Playwright automatically waits for the body to finish loading
-                const data = await response.json();
-                const line = JSON.stringify(data) + '\n';
-                fs.appendFileSync(outputFile, line);
-                
-                console.log(`💰 Capture successful. Lead details saved.`);
-            } catch (e) {
-                console.log(`⚠️ Skip: Response was not JSON or timed out.`);
-            }
+            // Non-blocking async write for parallel processing
+            (async () => {
+                try {
+                    const data = await response.json();
+                    const line = JSON.stringify(data) + '\n';
+                    
+                    // Async append for non-blocking writes
+                    fs.promises.appendFile(outputFile, line).catch(err => {
+                        console.log(`⚠️ Write error: ${err.message}`);
+                    });
+                    
+                    console.log(`💰 Capture successful. Lead details saved.`);
+                } catch (e) {
+                    console.log(`⚠️ Skip: Response was not JSON or timed out.`);
+                }
+            })();
         }
     });
 }

@@ -102,8 +102,10 @@ const { setupSidePanelTrap } = require('./extractData');
             // ⏰ Wait for data capture (optimized)
             await waitForCapture(page, 2000);
 
-            // 📊 Generate CSV after page completion
-            await generateCSV();
+            // 📊 Generate CSV every 5 pages for speed optimization
+            if (currentPage % 5 === 0) {
+                await generateCSV();
+            }
 
             // ➡️ Try to navigate to next page
             const nextResult = await goToNextPage(page, currentPage);
@@ -117,7 +119,6 @@ const { setupSidePanelTrap } = require('./extractData');
 
             // 🔍 Quick Prospeo check on new page (optimized)
             await activateProspeo(page, context);
-            await page.waitForTimeout(1000);
         }
 
 
