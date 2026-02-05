@@ -143,9 +143,11 @@ const { setupSidePanelTrap } = require('./extractData');
         console.log('\\n═══════════════════════════════════════════════════════');
         console.log('✅ EXTRACTION COMPLETED SUCCESSFULLY!');
         console.log('💾 Files: prospeo_leads.jsonl & prospeo_leads.csv');
+        console.log('🌐 Chrome will remain open for your use');
         console.log('═══════════════════════════════════════════════════════\\n');
 
-        await closeBrowser(browser);
+        // Don't close browser - let user keep working in Chrome
+        // await closeBrowser(browser);
         process.exit(0);
 
     } catch (error) {
