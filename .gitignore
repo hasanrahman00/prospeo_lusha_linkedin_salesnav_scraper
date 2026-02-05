@@ -1,0 +1,22 @@
+# Node modules
+node_modules/
+node/
+
+# Data files
+*.jsonl
+*.csv
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Chrome user data
+C:\Chrome_Prospeo_Clone/
