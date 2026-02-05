@@ -1,5 +1,42 @@
 const fs = require('fs');
 const { parse } = require('json2csv');
+const { cleanName } = require('./tasks/nameCleaner');
+
+function splitName(fullName) {
+    const cleaned = cleanName(fullName || '');
+    if (!cleaned) {
+        return { firstName: '', lastName: '' };
+    }
+    const parts = cleaned.split(/\s+/);
+    if (parts.length === 1) {
+        return { firstName: parts[0], lastName: '' };
+    }
+    return {
+        firstName: parts[0],
+        lastName: parts.slice(1).join(' ')
+    };
+}
+
+// Extract clean domain from website URL
+function extractDomainFromWebsite(websiteUrl) {
+    if (!websiteUrl) return '';
+    
+    let domain = String(websiteUrl).trim();
+    
+    // Remove protocol
+    domain = domain.replace(/^https?:\/\//i, '');
+    
+    // Remove www.
+    domain = domain.replace(/^www\./i, '');
+    
+    // Remove trailing slash and any path
+    domain = domain.split('/')[0];
+    
+    // Remove any query parameters or anchors
+    domain = domain.split('?')[0].split('#')[0];
+    
+    return domain.toLowerCase().trim();
+}
 
 async function convertToCSV(inputFile = 'leads.jsonl', outputFile = 'leads.csv') {
     console.log('\n📊 Converting JSONL to CSV...');
@@ -52,9 +89,28 @@ lines.forEach(line => {
                 emailDomain = emailParts.length > 1 ? emailParts[1] : '';
             }
             
+            // If Lusha domain exists and different, append it
+            if (person.lusha_domain && person.lusha_domain !== emailDomain) {
+                emailDomain = emailDomain ? `${emailDomain}; ${person.lusha_domain}` : person.lusha_domain;
+            }
+            
+            // If Email Domain is still empty, extract from Website
+            const websiteUrl = company?.website_url || '';
+            if (!emailDomain && websiteUrl) {
+                const websiteDomain = extractDomainFromWebsite(websiteUrl);
+                if (websiteDomain) {
+                    emailDomain = websiteDomain;
+                }
+            }
+            
+            // Split name into first and last
+            const { firstName, lastName } = splitName(person.full_name || '');
+            
             const mergedRow = {
                 // Person details
                 'Full Name': person.full_name || '',
+                'First Name': firstName,
+                'Last Name': lastName,
                 'Person Linkedin': person.linkedin_url || '',
                 
                 // Current job from job_history

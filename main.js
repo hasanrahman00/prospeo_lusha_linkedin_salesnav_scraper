@@ -23,6 +23,8 @@ const { launchChrome } = require('./tasks/launchChrome');
 const { connectToBrowser } = require('./tasks/connectBrowser');
 const { navigateToLinkedIn } = require('./tasks/navigateToLinkedIn');
 const { activateProspeo } = require('./tasks/activateProspeo');
+const { activateLusha } = require('./tasks/activateLusha');
+const { extractLushaContacts, enrichProspeoWithLusha, minimizeLushaSidebar } = require('./tasks/extractLushaContacts');
 const { scrollDashboardPage } = require('./tasks/scrollDashboard');
 const { waitForCapture } = require('./tasks/waitForCapture');
 const { getCurrentPageInfo } = require('./tasks/getPageInfo');
@@ -30,6 +32,7 @@ const { goToNextPage } = require('./tasks/navigateNextPage');
 const { generateCSV } = require('./tasks/generateCSV');
 const { closeBrowser } = require('./tasks/closeBrowser');
 const { setupSidePanelTrap } = require('./extractData');
+const { setupLushaTrap } = require('./extractLushaData');
 
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -63,10 +66,11 @@ const { setupSidePanelTrap } = require('./extractData');
 
 
         // ─────────────────────────────────────────────────────────────────
-        // TASK 3: Setup Data Listener
+        // TASK 3: Setup Data Listeners (Parallel Capture)
         // ─────────────────────────────────────────────────────────────────
         
-        setupSidePanelTrap(context);
+        setupSidePanelTrap(context);  // Prospeo listener
+        await setupLushaTrap(context);  // Lusha listener
 
 
         // ─────────────────────────────────────────────────────────────────
@@ -77,10 +81,16 @@ const { setupSidePanelTrap } = require('./extractData');
 
 
         // ─────────────────────────────────────────────────────────────────
-        // TASK 5: Activate Prospeo Extension
+        // TASK 5: Activate Extensions (Parallel)
         // ─────────────────────────────────────────────────────────────────
         
-        await activateProspeo(page, context);
+        // Activate both extensions in parallel for speed
+        await Promise.all([
+            activateProspeo(page, context),
+            activateLusha(page)
+        ]);
+        
+        console.log('✅ Both extensions activated and ready!');
 
 
         // ─────────────────────────────────────────────────────────────────
@@ -102,7 +112,20 @@ const { setupSidePanelTrap } = require('./extractData');
             // ⏰ Wait for data capture (optimized)
             await waitForCapture(page, 2000);
 
-            // 📊 Generate CSV after every page
+            // 🔵 Extract Lusha contacts from sidebar (parallel - no extra wait)
+            const lushaPromise = extractLushaContacts(page, { maxCards: 25, debug: true });
+            
+            // 📊 Generate CSV after every page (Prospeo data first)
+            await generateCSV();
+            
+            // Wait for Lusha extraction to complete & minimize
+            await lushaPromise;
+            await minimizeLushaSidebar(page);
+            
+            // 🔵 Enrich Prospeo data with Lusha domains (after Prospeo CSV is done)
+            await enrichProspeoWithLusha('lusha_contacts.jsonl', 'prospeo_leads.jsonl', true);
+            
+            // 📊 Regenerate CSV with enriched data
             await generateCSV();
 
             // ➡️ Try to navigate to next page
@@ -115,8 +138,11 @@ const { setupSidePanelTrap } = require('./extractData');
 
             currentPage = nextResult.pageNumber;
 
-            // 🔍 Quick Prospeo check on new page (optimized)
-            await activateProspeo(page, context);
+            // 🔍 Quick check both extensions on new page (parallel)
+            await Promise.all([
+                activateProspeo(page, context),
+                activateLusha(page)
+            ]);
         }
 
 
@@ -142,6 +168,7 @@ const { setupSidePanelTrap } = require('./extractData');
         console.log('\\n═══════════════════════════════════════════════════════');
         console.log('✅ EXTRACTION COMPLETED SUCCESSFULLY!');
         console.log('💾 Files: prospeo_leads.jsonl & prospeo_leads.csv');
+        console.log('💾 Files: lusha_leads.jsonl (Lusha data)');
         console.log('🌐 Chrome will remain open for your use');
         console.log('═══════════════════════════════════════════════════════\\n');
 
