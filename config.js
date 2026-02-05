@@ -36,17 +36,17 @@ module.exports = {
     
     
     // ─────────────────────────────────────────────────────────────────
-    // 🖱️ Scroll Settings
-    // ─────────────────────────────────────────────────────────────────
+    // 🖱️ Scroll Settings (Optimized for Speed)
+    // ─────────────────────────────────────────────────────────────────────
     
     SCROLL_OPTIONS: {
         trackerSelector: "a[data-control-name^='view_lead_panel']",
-        minSteps: 10,
-        maxSteps: 15,
-        stepPx: 300,
-        minDelayMs: 300,
-        maxDelayMs: 700,
+        minSteps: 8,           // Reduced from 10 (fewer iterations)
+        maxSteps: 12,          // Reduced from 15 (fewer iterations)
+        stepPx: 450,           // Increased from 300 (larger jumps)
+        minDelayMs: 300,       // Human-like timing maintained
+        maxDelayMs: 700,       // Human-like timing maintained
         maxRounds: 25,
-        bottomStallLimit: 5
+        bottomStallLimit: 3    // Reduced from 5 (quicker detection)
     }
 };

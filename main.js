@@ -102,10 +102,8 @@ const { setupSidePanelTrap } = require('./extractData');
             // ⏰ Wait for data capture (optimized)
             await waitForCapture(page, 2000);
 
-            // 📊 Generate CSV every 5 pages for speed optimization
-            if (currentPage % 5 === 0) {
-                await generateCSV();
-            }
+            // 📊 Generate CSV after every page
+            await generateCSV();
 
             // ➡️ Try to navigate to next page
             const nextResult = await goToNextPage(page, currentPage);

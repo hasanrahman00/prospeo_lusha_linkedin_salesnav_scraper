@@ -5,6 +5,12 @@ async function convertToCSV(inputFile = 'leads.jsonl', outputFile = 'leads.csv')
     console.log('\n📊 Converting JSONL to CSV...');
     
     try {
+        // Check if JSONL input file exists
+        if (!fs.existsSync(inputFile)) {
+            console.log('⚠️  No data file found yet. Skipping CSV generation.');
+            return;
+        }
+        
         // Read the JSONL file
         const jsonlData = fs.readFileSync(inputFile, 'utf-8');
         const lines = jsonlData.trim().split('\n');
