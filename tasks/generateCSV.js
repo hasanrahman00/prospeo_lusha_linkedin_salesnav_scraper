@@ -10,7 +10,7 @@ async function generateCSV() {
     console.log('📊 Generating CSV file...');
     
     // 📄 Convert JSONL to CSV
-    await convertToCSV('prospeo_leads.jsonl', 'prospeo_leads.csv');
+    await convertToCSV('prospeo_leads.jsonl', 'leads.csv');
     
     console.log('✅ CSV file generated successfully');
 }

@@ -25,7 +25,7 @@ module.exports = {
     // 🔗 LinkedIn Settings
     // ─────────────────────────────────────────────────────────────────
     
-    LINKEDIN_SEARCH_URL: 'https://www.linkedin.com/sales/search/people?page=1&query=(recentSearchParam%3A(id%3A5229927418%2CdoLogHistory%3Atrue)%2Cfilters%3AList((type%3ACOMPANY_HEADCOUNT%2Cvalues%3AList((id%3AB%2Ctext%3A1-10%2CselectionType%3AINCLUDED)))))&sessionId=P4xf%2Fh8WSqK5%2BeKf266jlQ%3D%3D&viewAllFilters=true',
+    LINKEDIN_SEARCH_URL: 'https://www.linkedin.com/sales/search/people?query=(recentSearchParam%3A(id%3A5441775764%2CdoLogHistory%3Atrue)%2Cfilters%3AList((type%3ACOMPANY_HEADCOUNT%2Cvalues%3AList((id%3AC%2Ctext%3A11-50%2CselectionType%3AINCLUDED)))%2C(type%3AREGION%2Cvalues%3AList((id%3A91000005%2Ctext%3ABenelux%2CselectionType%3AINCLUDED)))%2C(type%3AINDUSTRY%2Cvalues%3AList((id%3A2050%2Ctext%3AOptometrists%2CselectionType%3AINCLUDED)))))&sessionId=MZPMjS8CStiL2%2B0qUWyQjA%3D%3D&viewAllFilters=true',
     
     
     // ─────────────────────────────────────────────────────────────────

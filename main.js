@@ -167,7 +167,7 @@ const { setupLushaTrap } = require('./extractLushaData');
         
         console.log('\\n═══════════════════════════════════════════════════════');
         console.log('✅ EXTRACTION COMPLETED SUCCESSFULLY!');
-        console.log('💾 Files: prospeo_leads.jsonl & prospeo_leads.csv');
+        console.log('💾 Files: prospeo_leads.jsonl & leads.csv');
         console.log('💾 Files: lusha_leads.jsonl (Lusha data)');
         console.log('🌐 Chrome will remain open for your use');
         console.log('═══════════════════════════════════════════════════════\\n');

@@ -9,9 +9,15 @@ const PREFIXES = [
   "Mx",
   "Master",
   "Messrs",
+  "Md",
+  "Md.",
+  "Mdm",
+  "Mdm.",
+ 
 
   // Academic / professional
   "Dr",
+  "Dr.",
   "Doctor",
   "Prof",
   "Professor",
