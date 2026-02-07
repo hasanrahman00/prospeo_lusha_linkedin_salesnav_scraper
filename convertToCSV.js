@@ -50,10 +50,10 @@ async function convertToCSV(inputFile = 'leads.jsonl', outputFile = 'leads.csv')
         
         // Read the JSONL file
         const jsonlData = fs.readFileSync(inputFile, 'utf-8');
-        const lines = jsonlData.trim().split('\n');
+        const lines = jsonlData.trim().split('\n').filter(line => line.trim());
         
-        if (lines.length === 0 || !lines[0]) {
-            console.log('⚠️  No data found in ' + inputFile);
+        if (lines.length === 0) {
+            console.log('⚠️  No data captured yet in ' + inputFile);
             return;
         }
 

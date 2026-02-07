@@ -33,6 +33,7 @@ const { generateCSV } = require('./tasks/generateCSV');
 const { closeBrowser } = require('./tasks/closeBrowser');
 const { setupSidePanelTrap } = require('./extractData');
 const { setupLushaTrap } = require('./extractLushaData');
+const fs = require('fs');
 
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -66,22 +67,28 @@ const { setupLushaTrap } = require('./extractLushaData');
 
 
         // ─────────────────────────────────────────────────────────────────
-        // TASK 3: Setup Data Listeners (Parallel Capture)
+        // TASK 3: Initialize Data Files
         // ─────────────────────────────────────────────────────────────────
         
-        setupSidePanelTrap(context);  // Prospeo listener
-        await setupLushaTrap(context);  // Lusha listener
-
+        // Create empty JSONL files if they don't exist
+        if (!fs.existsSync('prospeo_leads.jsonl')) {
+            fs.writeFileSync('prospeo_leads.jsonl', '');
+            console.log('✅ Initialized prospeo_leads.jsonl');
+        }
+        if (!fs.existsSync('lusha_contacts.jsonl')) {
+            fs.writeFileSync('lusha_contacts.jsonl', '');
+            console.log('✅ Initialized lusha_contacts.jsonl');
+        }
 
         // ─────────────────────────────────────────────────────────────────
-        // TASK 4: Navigate to LinkedIn
+        // TASK 3: Navigate to LinkedIn
         // ─────────────────────────────────────────────────────────────────
         
         const page = await navigateToLinkedIn(context, config.LINKEDIN_SEARCH_URL);
 
 
         // ─────────────────────────────────────────────────────────────────
-        // TASK 5: Activate Extensions (Parallel)
+        // TASK 4: Activate Extensions (Parallel)
         // ─────────────────────────────────────────────────────────────────
         
         // Activate both extensions in parallel for speed
@@ -91,6 +98,14 @@ const { setupLushaTrap } = require('./extractLushaData');
         ]);
         
         console.log('✅ Both extensions activated and ready!');
+
+
+        // ─────────────────────────────────────────────────────────────────
+        // TASK 5: Setup Data Listeners (Must be AFTER activation)
+        // ─────────────────────────────────────────────────────────────────
+        
+        await setupSidePanelTrap(context);  // Prospeo listener
+        await setupLushaTrap(context);  // Lusha listener
 
 
         // ─────────────────────────────────────────────────────────────────

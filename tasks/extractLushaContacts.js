@@ -184,64 +184,25 @@ async function extractLushaContacts(page, options = {}) {
     }
 }
 
-// Enhanced matching: First Name → Last Name → Full Name (with duplicate handling)
+// Strict Full Name Matching Only (no partial matches to avoid wrong domains)
 function findMatchingProspeoRecord(lushaContact, prospeoPersons) {
     if (!prospeoPersons || prospeoPersons.length === 0) {
         return null;
     }
     
-    const lushaFirstName = (lushaContact.firstName || '').toLowerCase().trim();
-    const lushaLastName = (lushaContact.lastName || '').toLowerCase().trim();
     const lushaFullName = (lushaContact.fullName || '').toLowerCase().trim();
     
-    // Step 1: Match by First Name
-    let matches = prospeoPersons.filter(p => {
-        const cleanedName = cleanName(p.full_name || '');
-        const { firstName } = splitName(cleanedName);
-        return firstName.toLowerCase().trim() === lushaFirstName;
+    if (!lushaFullName) {
+        return null;
+    }
+    
+    // Only match by exact full name (cleaned)
+    const fullNameMatch = prospeoPersons.find(p => {
+        const cleanedName = cleanName(p.full_name || '').toLowerCase().trim();
+        return cleanedName === lushaFullName;
     });
     
-    if (matches.length === 1) {
-        return matches[0];
-    }
-    
-    // Step 2: If multiple or no matches, try Last Name
-    if (matches.length === 0) {
-        matches = prospeoPersons.filter(p => {
-            const cleanedName = cleanName(p.full_name || '');
-            const { lastName } = splitName(cleanedName);
-            return lastName.toLowerCase().trim() === lushaLastName;
-        });
-    } else if (matches.length > 1 && lushaLastName) {
-        // Multiple first name matches, filter by last name
-        const lastNameMatches = matches.filter(p => {
-            const cleanedName = cleanName(p.full_name || '');
-            const { lastName } = splitName(cleanedName);
-            return lastName.toLowerCase().trim() === lushaLastName;
-        });
-        if (lastNameMatches.length === 1) {
-            return lastNameMatches[0];
-        }
-        matches = lastNameMatches;
-    }
-    
-    if (matches.length === 1) {
-        return matches[0];
-    }
-    
-    // Step 3: If still multiple or no matches, try Full Name
-    if (matches.length === 0 || matches.length > 1) {
-        const fullNameMatch = prospeoPersons.find(p => {
-            const cleanedName = cleanName(p.full_name || '').toLowerCase().trim();
-            return cleanedName === lushaFullName;
-        });
-        if (fullNameMatch) {
-            return fullNameMatch;
-        }
-    }
-    
-    // No unique match found
-    return null;
+    return fullNameMatch || null;
 }
 
 // Append Lusha domains to Prospeo data after CSV generation

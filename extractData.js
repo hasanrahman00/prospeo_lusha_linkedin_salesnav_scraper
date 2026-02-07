@@ -6,9 +6,21 @@ async function setupSidePanelTrap(context, outputFile = 'prospeo_leads.jsonl') {
 
     // Wait until the sidepanel.html page appears in the context
     let sidePanelPage;
-    while (!sidePanelPage) {
+    let attempts = 0;
+    while (!sidePanelPage && attempts < 60) {  // 30 second timeout
         sidePanelPage = context.pages().find(p => p.url().includes('sidepanel.html'));
-        if (!sidePanelPage) await new Promise(r => setTimeout(r, 500));
+        if (!sidePanelPage) {
+            await new Promise(r => setTimeout(r, 500));
+            attempts++;
+            if (attempts % 10 === 0) {
+                console.log(`🔍 Still searching for sidepanel... (${attempts * 0.5}s)`);
+            }
+        }
+    }
+
+    if (!sidePanelPage) {
+        console.log('❌ Prospeo sidepanel not found after 30 seconds');
+        return;
     }
 
     console.log(`🎯 [Hunter] TARGET LOCKED: ${sidePanelPage.url()}`);
